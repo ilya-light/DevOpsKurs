@@ -1,0 +1,44 @@
+FROM ubuntu:22.04
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /workspace
+
+COPY requirements_tester.txt /tmp/requirements_tester.txt
+COPY tester /workspace/tests
+COPY ssh/authorized_keys /tmp/authorized_keys
+COPY app-devops /tmp/app
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        'ca-certificates=20240203~22.04.*' \
+        'git=1:2.34.1-1ubuntu1.*' \
+        'openssh-client=1:8.9p1-3ubuntu0.*' \
+        'openssh-server=1:8.9p1-3ubuntu0.*' \
+        'patch=2.7.6-7build2' \
+        'python3=3.10.6-1~22.04.*' \
+        'python3-pip=22.0.2+dfsg-1ubuntu0.*' \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --shell /bin/bash tester \
+    && mkdir -p /home/tester/.ssh /run/sshd /workspace/logs \
+    && cp /tmp/authorized_keys /home/tester/.ssh/authorized_keys \
+    && python3 -m pip install --no-cache-dir -r /tmp/requirements_tester.txt \
+    && cp -r /tmp/app /workspace/app \
+    && cd /workspace \
+    && chmod 700 /home/tester/.ssh \
+    && chmod 600 /home/tester/.ssh/authorized_keys \
+    && chown -R tester:tester /home/tester/.ssh /workspace \
+    && chmod +x /workspace/tests/entrypoint.sh /workspace/tests/scripts/*.sh \
+    && printf '%s\n' \
+        'PasswordAuthentication no' \
+        'PubkeyAuthentication yes' \
+        'PermitRootLogin no' \
+        'AllowUsers tester' \
+        'ChallengeResponseAuthentication no' \
+        'UsePAM no' \
+        > /etc/ssh/sshd_config.d/devops.conf \
+    && rm -rf /tmp/devops-examples /tmp/example_app.patch /tmp/requirements_tester.txt /tmp/authorized_keys
+
+ENTRYPOINT ["/workspace/tests/entrypoint.sh"]
+CMD ["python3", "-m", "http.server", "3000"]

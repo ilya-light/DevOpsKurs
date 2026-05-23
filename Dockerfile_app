@@ -1,0 +1,24 @@
+FROM ubuntu:22.04
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    APP_PORT=5000
+
+WORKDIR /opt/app
+
+COPY requirements_app.txt /tmp/requirements_app.txt
+
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        'ca-certificates=20240203~22.04.*' \
+        'git=1:2.34.1-1ubuntu1.*' \
+        'patch=2.7.6-7build2' \
+        'python3=3.10.6-1~22.04.*' \
+        'python3-pip=22.0.2+dfsg-1ubuntu0.*' \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m pip install --no-cache-dir -r /tmp/requirements_app.txt
+
+COPY app-devops /opt/app/
+
+CMD ["python3", "main.py"]

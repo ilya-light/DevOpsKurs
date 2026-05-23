@@ -1,0 +1,3 @@
+# Replace this file with your existing public SSH key before docker-compose build.
+# Example: cp ~/.ssh/id_ed25519.pub ssh/authorized_keys
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFw+CAO9pFmQO9i9GnqNMO8Xqnxxt6QCZX/a0T/pPsGL devops-placeholder-key

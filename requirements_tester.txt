@@ -1,0 +1,15 @@
+requests==2.32.3
+charset-normalizer==3.3.2
+idna==3.7
+urllib3==2.2.2
+certifi==2024.7.4
+pylint==3.3.1
+astroid==3.3.5
+isort==5.13.2
+mccabe==0.7.0
+dill==0.3.8
+platformdirs==4.2.2
+tomlkit==0.13.0
+css-html-prettify==2.5.5
+beautifulsoup4==4.12.3
+soupsieve==2.5
