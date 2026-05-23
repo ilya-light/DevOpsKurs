@@ -40,5 +40,7 @@ RUN apt-get update \
         > /etc/ssh/sshd_config.d/devops.conf \
     && rm -rf /tmp/devops-examples /tmp/example_app.patch /tmp/requirements_tester.txt /tmp/authorized_keys
 
+EXPOSE 3000
+
 ENTRYPOINT ["/workspace/tests/entrypoint.sh"]
 CMD ["python3", "-m", "http.server", "3000"]
